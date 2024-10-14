@@ -20,7 +20,9 @@ export const addProducts = async (req, res) => {
             price : price,
             imageUrl: imageUrl
         });
-        console.log(product);
+        if(!product.name || !product.price || !product.imageUrl){
+            return res.status(400).json({success: false, message: 'Product data is required'});
+        }
         const newProduct = await product.save();
         res.status(201).json({success: true, data: newProduct});
     } catch (error) {
@@ -37,7 +39,7 @@ export const updateProduct = async (req, res) => {
         if(!product.name || !product.price || !product.imageUrl) {
             return res.status(400).send({success: false, message: 'Product data is required'});
         }
-        
+
         try {
             const updatedProduct = await product.findByIdAndUpdate(id, product, {new: true});
             res.status(200).json({success: true, data: updatedProduct});
@@ -72,7 +74,7 @@ export const deleteProduct = async (req, res) => {
         if(!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).send({success: false, message: 'Invalid product id'});
         }
-        await Product.findByIdAndRemove(id);
+        await Product.findByIdAndDelete(id);
         res.status(200).json({success: true, message: 'Product deleted successfully'});
     } catch (err) {
         console.error(`Error: ${err.message}`);
